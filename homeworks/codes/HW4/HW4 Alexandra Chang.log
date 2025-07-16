@@ -1,0 +1,537 @@
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /Users/al8xi8/Desktop/HW4 Alexandra Chang.log
+  log type:  text
+ opened on:   5 Feb 2024, 13:14:06
+
+. do "/Users/al8xi8/Desktop/HW4 Alexandra Chang.do"
+
+. * PBHS31001 Epidemiologic Methods HW4
+. * Date: 2/6/2024 
+. * By: Alexandra Chang 
+. *==============================================================================*
+. 
+. **************Categorical Variables from Continuous Variables*******************
+. 
+. *
+. *Modify "bmi" from a cont. variable into cat. variable.
+. //Generate BMI categories based on period 1.
+. recode bmi (min/18.5=0 "underweight") (18.5/25=1 "normal") (25/30=2 "overweight") (30/max=3 "obese") , gen(bmiCat)
+(11,575 differences between bmi and bmiCat)
+
+. 
+. //Tabulate to check.
+. tab bmiCat, missing
+
+  RECODE of |
+  bmi (body |
+ mass index |
+ (kg/(m*m)) |      Freq.     Percent        Cum.
+------------+-----------------------------------
+underweight |        167        1.44        1.44
+     normal |      5,032       43.28       44.71
+ overweight |      4,816       41.42       86.14
+      obese |      1,560       13.42       99.55
+          . |         52        0.45      100.00
+------------+-----------------------------------
+      Total |     11,627      100.00
+
+. 
+. *
+. *Repeat same steps for "death".
+. //Examine distribution of each variable along with missing variables.
+. sum death
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+       death |     11,627    .3033457     .459723          0          1
+
+. tab death, missing
+
+      death |
+  indicator |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |      8,100       69.67       69.67
+          1 |      3,527       30.33      100.00
+------------+-----------------------------------
+      Total |     11,627      100.00
+
+. 
+. //Cross-tabulate "bmiCat" and "death".
+. tab bmiCat death, missing
+
+  RECODE of |
+  bmi (body |
+ mass index |    death indicator
+ (kg/(m*m)) |         0          1 |     Total
+------------+----------------------+----------
+underweight |        99         68 |       167 
+     normal |     3,674      1,358 |     5,032 
+ overweight |     3,305      1,511 |     4,816 
+      obese |     1,002        558 |     1,560 
+          . |        20         32 |        52 
+------------+----------------------+----------
+      Total |     8,100      3,527 |    11,627 
+
+. 
+. *******************************Table Contruction********************************
+. 
+. *Install "table1" package from the Statistical Software Components (SSC):
+. ssc install table1
+checking table1 consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. 
+. *Create Table 1 for prospective cohort study for participants.
+. 
+. //Stratify by bmiCat for cohort as primary exposure.
+. table1, by(bmiCat) vars(death cat) format(%2.1f) missing
+  +----------------------------------------------------------------------------------------------+
+  | Factor            Level   underweight   normal         overweight     obese          p-value |
+  |----------------------------------------------------------------------------------------------|
+  | N                         167           5032           4816           1560                   |
+  |----------------------------------------------------------------------------------------------|
+  | death indicator   0       99 (59.3%)    3674 (73.0%)   3305 (68.6%)   1002 (64.2%)    <0.001 |
+  |                   1       68 (40.7%)    1358 (27.0%)   1511 (31.4%)   558 (35.8%)            |
+  +----------------------------------------------------------------------------------------------+
+
+. 
+. **************************1. Analyzing Cohort Study*****************************
+. 
+. *
+. *Create a table for prospective cohort study for participants for cum. incidence.
+. //Assuming equal or complete follow-up time for each subject.
+. //Using normal weight(unexposed) as reference.
+. 
+. csi 1358 1358 3674 3674
+
+                 |   Exposed   Unexposed  |      Total
+-----------------+------------------------+-----------
+           Cases |      1358        1358  |       2716
+        Noncases |      3674        3674  |       7348
+-----------------+------------------------+-----------
+           Total |      5032        5032  |      10064
+                 |                        |
+            Risk |  .2698728    .2698728  |   .2698728
+                 |                        |
+                 |      Point estimate    |    [95% conf. interval]
+                 |------------------------+------------------------
+ Risk difference |                0       |   -.0173449    .0173449 
+      Risk ratio |                1       |    .9377512    1.066381 
+ Attr. frac. ex. |                0       |   -.0663809    .0622488 
+ Attr. frac. pop |                0       |
+                 +-------------------------------------------------
+                               chi2(1) =     0.00  Pr>chi2 = 1.0000
+
+. //Result of RR = 1: No difference in risk between the exposed and unexposed groups.
+. 
+. *Manually input data for underweight(exposed) vs normal weight(unexposed).
+. csi 68 1358 99 3674
+
+                 |   Exposed   Unexposed  |      Total
+-----------------+------------------------+-----------
+           Cases |        68        1358  |       1426
+        Noncases |        99        3674  |       3773
+-----------------+------------------------+-----------
+           Total |       167        5032  |       5199
+                 |                        |
+            Risk |  .4071856    .2698728  |   .2742835
+                 |                        |
+                 |      Point estimate    |    [95% conf. interval]
+                 |------------------------+------------------------
+ Risk difference |         .1373128       |    .0617949    .2128307 
+      Risk ratio |         1.508806       |    1.249519    1.821896 
+ Attr. frac. ex. |         .3372241       |    .1996923    .4511213 
+ Attr. frac. pop |         .0160808       |
+                 +-------------------------------------------------
+                               chi2(1) =    15.31  Pr>chi2 = 0.0001
+
+. 
+. *Repeat same steps for overweight(exposed) vs normal weight(unexposed).
+. csi 1511 1358 3305 3674
+
+                 |   Exposed   Unexposed  |      Total
+-----------------+------------------------+-----------
+           Cases |      1511        1358  |       2869
+        Noncases |      3305        3674  |       6979
+-----------------+------------------------+-----------
+           Total |      4816        5032  |       9848
+                 |                        |
+            Risk |  .3137458    .2698728  |   .2913282
+                 |                        |
+                 |      Point estimate    |    [95% conf. interval]
+                 |------------------------+------------------------
+ Risk difference |          .043873       |    .0259241    .0618219 
+      Risk ratio |         1.162569       |    1.092979     1.23659 
+ Attr. frac. ex. |         .1398362       |    .0850693    .1913248 
+ Attr. frac. pop |         .0736468       |
+                 +-------------------------------------------------
+                               chi2(1) =    22.94  Pr>chi2 = 0.0000
+
+. 
+. *Repeat same steps for obese(exposed) vs normal weight(unexposed).
+. csi 558 1358 1002 3674
+
+                 |   Exposed   Unexposed  |      Total
+-----------------+------------------------+-----------
+           Cases |       558        1358  |       1916
+        Noncases |      1002        3674  |       4676
+-----------------+------------------------+-----------
+           Total |      1560        5032  |       6592
+                 |                        |
+            Risk |  .3576923    .2698728  |   .2906553
+                 |                        |
+                 |      Point estimate    |    [95% conf. interval]
+                 |------------------------+------------------------
+ Risk difference |         .0878195       |    .0610581    .1145809 
+      Risk ratio |         1.325411       |    1.222844     1.43658 
+ Attr. frac. ex. |         .2455169       |     .182234    .3039026 
+ Attr. frac. pop |         .0715023       |
+                 +-------------------------------------------------
+                               chi2(1) =    44.54  Pr>chi2 = 0.0000
+
+. 
+. *Double check p-values using "normal" as reference group.
+. //Specify "normal" as reference group by adding "b1" in regression command.
+. regress death ib1.bmiCat
+
+      Source |       SS           df       MS      Number of obs   =    11,575
+-------------+----------------------------------   F(3, 11571)     =     19.93
+       Model |  12.5444504         3  4.18148348   Prob > F        =    0.0000
+    Residual |  2427.16181    11,571  .209762494   R-squared       =    0.0051
+-------------+----------------------------------   Adj R-squared   =    0.0049
+       Total |  2439.70626    11,574   .21079197   Root MSE        =      .458
+
+------------------------------------------------------------------------------
+       death | Coefficient  Std. err.      t    P>|t|     [95% conf. interval]
+-------------+----------------------------------------------------------------
+      bmiCat |
+underweight  |   .1373128   .0360243     3.81   0.000     .0666991    .2079265
+ overweight  |    .043873   .0092326     4.75   0.000     .0257756    .0619705
+      obese  |   .0878195   .0132721     6.62   0.000     .0618039    .1138351
+             |
+       _cons |   .2698728   .0064564    41.80   0.000     .2572171    .2825285
+------------------------------------------------------------------------------
+
+. 
+. *******************************Survival Analysis********************************
+. 
+. *
+. *Create a table for prospective cohort study for participants for incidence rate.
+. //Using normal weight(unexposed) as reference.
+. 
+. //Assuming 'death' is the death indicator, 'bmiCat' is the categorical variable, and 'timedth' is the survival time variable.
+. 
+. *Define Survival-Time Data.
+. stset timedth, failure(death)
+
+Survival-time data settings
+
+         Failure event: death!=0 & death<.
+Observed time interval: (0, timedth]
+     Exit on or before: failure
+
+--------------------------------------------------------------------------
+     11,627  total observations
+          0  exclusions
+--------------------------------------------------------------------------
+     11,627  observations remaining, representing
+      3,527  failures in single-record/single-failure data
+   91319655  total analysis time at risk and under observation
+                                                At risk from t =         0
+                                     Earliest observed entry t =         0
+                                          Last observed exit t =     8,766
+
+. 
+. *Calculate Person-Time.
+. //Use stsum to calculate person-time
+. //Summarize survival times stratified by 'bmiCat' to obtain incidence rate.
+. stsum, by(bmiCat)
+
+        Failure _d: death
+  Analysis time _t: timedth
+
+         |               Incidence     Number of   |------ Survival time -----|
+  bmiCat | Time at risk       rate      subjects        25%       50%       75%
+---------+---------------------------------------------------------------------
+underwei |    1,258,925    .000054           167       6808         .         .
+  normal |   39,974,102    .000034          5032       8349         .         .
+overweig |   37,760,430     .00004          4816       7689         .         .
+   obese |   12,000,275   .0000465          1560       7146         .         .
+---------+---------------------------------------------------------------------
+   Total |   90,993,732   .0000384         11575       7818         .         .
+
+. //Determine person-time for each category by using "ir" command.
+. ir death bmiCat timedth if bmiCat==0
+
+Incidence-rate comparison
+
+                 | RECODE of bmi [body    |
+                 | mass index [kg/[m*m]]  |
+                 |   Exposed   Unexposed  |      Total
+-----------------+------------------------+-----------
+ death indicator |         0          68  |         68
+days baseline-de |         0     1258925  |    1258925
+-----------------+------------------------+-----------
+                 |                        |
+  Incidence rate |         .     .000054  |    .000054
+                 |                        |
+                 |      Point estimate    |    [95% conf. interval]
+                 |------------------------+------------------------
+ Inc. rate diff. |                .       |           .           . 
+ Inc. rate ratio |                .       |           .           . 
+ Attr. frac. ex. |                .       |           .           . 
+ Attr. frac. pop |                .       |
+                 +-------------------------------------------------
+Mid-p-values for tests of incidence-rate difference:
+  Adj Pr(Exposed death indicator <= 0) = 0.5000 (lower one-sided)
+  Adj Pr(Exposed death indicator >= 0) = 0.5000 (upper one-sided)
+                     Two-sided p-value = 1.0000
+
+. ir death bmiCat timedth if bmiCat==1
+
+Incidence-rate comparison
+
+                 | RECODE of bmi [body    |
+                 | mass index [kg/[m*m]]  |
+                 |   Exposed   Unexposed  |      Total
+-----------------+------------------------+-----------
+ death indicator |      1358           0  |       1358
+days baseline-de |  4.00e+07           0  |   4.00e+07
+-----------------+------------------------+-----------
+                 |                        |
+  Incidence rate |   .000034           .  |    .000034
+                 |                        |
+                 |      Point estimate    |    [95% conf. interval]
+                 |------------------------+------------------------
+ Inc. rate diff. |                .       |           .           . 
+ Inc. rate ratio |                .       |           .           . 
+ Attr. frac. ex. |                1       |           .           1 
+ Attr. frac. pop |                1       |
+                 +-------------------------------------------------
+Mid-p-values for tests of incidence-rate difference:
+  Adj Pr(Exposed death indicator <= 1358) = 0.5000 (lower one-sided)
+  Adj Pr(Exposed death indicator >= 1358) = 0.5000 (upper one-sided)
+                        Two-sided p-value = 1.0000
+
+. ir death bmiCat timedth if bmiCat==2
+
+Incidence-rate comparison
+
+                 | RECODE of bmi [body    |
+                 | mass index [kg/[m*m]]  |
+                 |   Exposed   Unexposed  |      Total
+-----------------+------------------------+-----------
+ death indicator |      1511           0  |       1511
+days baseline-de |  3.78e+07           0  |   3.78e+07
+-----------------+------------------------+-----------
+                 |                        |
+  Incidence rate |    .00004           .  |     .00004
+                 |                        |
+                 |      Point estimate    |    [95% conf. interval]
+                 |------------------------+------------------------
+ Inc. rate diff. |                .       |           .           . 
+ Inc. rate ratio |                .       |           .           . 
+ Attr. frac. ex. |                1       |           .           1 
+ Attr. frac. pop |                1       |
+                 +-------------------------------------------------
+Mid-p-values for tests of incidence-rate difference:
+  Adj Pr(Exposed death indicator <= 1511) = 0.5000 (lower one-sided)
+  Adj Pr(Exposed death indicator >= 1511) = 0.5000 (upper one-sided)
+                        Two-sided p-value = 1.0000
+
+. ir death bmiCat timedth if bmiCat==3
+
+Incidence-rate comparison
+
+                 | RECODE of bmi [body    |
+                 | mass index [kg/[m*m]]  |
+                 |   Exposed   Unexposed  |      Total
+-----------------+------------------------+-----------
+ death indicator |       558           0  |        558
+days baseline-de |  1.20e+07           0  |   1.20e+07
+-----------------+------------------------+-----------
+                 |                        |
+  Incidence rate |  .0000465           .  |   .0000465
+                 |                        |
+                 |      Point estimate    |    [95% conf. interval]
+                 |------------------------+------------------------
+ Inc. rate diff. |                .       |           .           . 
+ Inc. rate ratio |                .       |           .           . 
+ Attr. frac. ex. |                1       |           .           1 
+ Attr. frac. pop |                1       |
+                 +-------------------------------------------------
+Mid-p-values for tests of incidence-rate difference:
+  Adj Pr(Exposed death indicator <= 558) = 0.5000 (lower one-sided)
+  Adj Pr(Exposed death indicator >= 558) = 0.5000 (upper one-sided)
+                       Two-sided p-value = 1.0000
+
+. 
+. *Manually input data for underweight(exposed) vs normal weight(unexposed).
+. iri 68 1358 1258925 4.00e+07 
+
+Incidence-rate comparison
+
+                 |   Exposed   Unexposed  |      Total
+-----------------+------------------------+-----------
+           Cases |        68        1358  |       1426
+     Person-time |   1258925    4.00e+07  |   4.13e+07
+-----------------+------------------------+-----------
+                 |                        |
+  Incidence rate |   .000054    .0000339  |   .0000346
+                 |                        |
+                 |      Point estimate    |    [95% conf. interval]
+                 |------------------------+------------------------
+ Inc. rate diff. |         .0000201       |    7.10e-06     .000033 
+ Inc. rate ratio |         1.590997       |    1.228217    2.030388 (exact)
+ Attr. frac. ex. |         .3714632       |    .1858119    .5074833 (exact)
+ Attr. frac. pop |         .0177135       |
+                 +-------------------------------------------------
+Mid-p-values for tests of incidence-rate difference:
+  Adj Pr(Exposed cases <= 68) = 0.9998 (lower one-sided)
+  Adj Pr(Exposed cases >= 68) = 0.0002 (upper one-sided)
+            Two-sided p-value = 0.0005
+
+.  
+. *Repeat same steps for overweight(exposed) vs normal weight(unexposed).
+. iri 1511 1358 3.78e+07 4.00e+07 
+
+Incidence-rate comparison
+
+                 |   Exposed   Unexposed  |      Total
+-----------------+------------------------+-----------
+           Cases |      1511        1358  |       2869
+     Person-time |  3.78e+07    4.00e+07  |   7.78e+07
+-----------------+------------------------+-----------
+                 |                        |
+  Incidence rate |    .00004    .0000339  |   .0000369
+                 |                        |
+                 |      Point estimate    |    [95% conf. interval]
+                 |------------------------+------------------------
+ Inc. rate diff. |         6.02e-06       |    3.32e-06    8.73e-06 
+ Inc. rate ratio |         1.177424       |    1.093493    1.267891 (exact)
+ Attr. frac. ex. |         .1506883       |    .0854991    .2112884 (exact)
+ Attr. frac. pop |         .0793621       |
+                 +-------------------------------------------------
+Mid-p-values for tests of incidence-rate difference:
+  Adj Pr(Exposed cases <= 1511) = 1.0000 (lower one-sided)
+  Adj Pr(Exposed cases >= 1511) = 0.0000 (upper one-sided)
+              Two-sided p-value = 0.0000
+
+. 
+. *Repeat same steps for obese(exposed) vs normal weight(unexposed).
+. iri 558 1358 1.20e+07 4.00e+07
+
+Incidence-rate comparison
+
+                 |   Exposed   Unexposed  |      Total
+-----------------+------------------------+-----------
+           Cases |       558        1358  |       1916
+     Person-time |  1.20e+07    4.00e+07  |   5.20e+07
+-----------------+------------------------+-----------
+                 |                        |
+  Incidence rate |  .0000465    .0000339  |   .0000368
+                 |                        |
+                 |      Point estimate    |    [95% conf. interval]
+                 |------------------------+------------------------
+ Inc. rate diff. |         .0000126       |    8.29e-06    .0000168 
+ Inc. rate ratio |         1.369661       |    1.238888    1.512647 (exact)
+ Attr. frac. ex. |         .2698925       |    .1928243    .3389072 (exact)
+ Attr. frac. pop |         .0786013       |
+                 +-------------------------------------------------
+Mid-p-values for tests of incidence-rate difference:
+  Adj Pr(Exposed cases <= 558) = 1.0000 (lower one-sided)
+  Adj Pr(Exposed cases >= 558) = 0.0000 (upper one-sided)
+             Two-sided p-value = 0.0000
+
+. 
+. **********************2. Stratified Analysis for Confounding********************
+. 
+. *Recategorize bmi to exclude underweight and overweight.
+. recode bmi (18.5/25=0 "normal") (30/max=1 "obese") , gen(bmiCatt)
+(6,601 differences between bmi and bmiCatt)
+
+. 
+. *Possible 3 Confounders: age, sex, cursmoke
+. //Recategorize age: 
+. recode age (min/39=0 "30's") (39/49=1 "40's") (49/59=2 "50's") (59/max=3 "60 plus") , gen(ageCat)
+(11,627 differences between age and ageCat)
+
+. 
+. *Individual stratified analysis for each 3 variables.
+. //ageCat:
+. cs death bmiCatt if bmiCatt==0 | bmiCatt==1, by(ageCat)
+
+RECODE of age (a |  Risk ratio    [95% conf. interval]   M–H weight
+-----------------+-------------------------------------------------
+            30's |    1.366298     .6313602   2.956744     4.354108 
+            40's |    1.253894     .9810479   1.602623     44.27586 
+            50's |    1.278526     1.100338    1.48557      102.363 
+         60 plus |    1.205792     1.100563   1.321081     188.6928 
+-----------------+-------------------------------------------------
+           Crude |    1.327388      1.22496    1.43838              
+    M–H combined |    1.236037     1.145609   1.333603
+-------------------------------------------------------------------
+Test of homogeneity (M–H)      chi2(3) =    0.555  Pr>chi2 = 0.9066
+
+. //sex:
+. cs death bmiCatt if bmiCatt==0 | bmiCatt==1, by(sex)
+
+             sex |  Risk ratio    [95% conf. interval]   M–H weight
+-----------------+-------------------------------------------------
+               1 |    .9886734     .8795968   1.111276     174.2213 
+               2 |    1.661201     1.487768   1.854852     153.7891 
+-----------------+-------------------------------------------------
+           Crude |    1.327388      1.22496    1.43838              
+    M–H combined |    1.303991      1.20428   1.411958
+-------------------------------------------------------------------
+Test of homogeneity (M–H)      chi2(1) =   40.062  Pr>chi2 = 0.0000
+
+. //cursmoke:
+. cs death bmiCatt if bmiCatt==0 | bmiCatt==1, by(cursmoke)
+
+current cig smok |  Risk ratio    [95% conf. interval]   M–H weight
+-----------------+-------------------------------------------------
+               0 |    1.302818     1.171466   1.448898     196.4384 
+               1 |    1.434174      1.26497    1.62601     113.7241 
+-----------------+-------------------------------------------------
+           Crude |    1.327388      1.22496    1.43838              
+    M–H combined |    1.350981     1.245428   1.465479
+-------------------------------------------------------------------
+Test of homogeneity (M–H)      chi2(1) =    1.319  Pr>chi2 = 0.2508
+
+. 
+. *Combined stratified analysis for all 3 variables.
+. cs death bmiCatt if bmiCatt==0 | bmiCatt==1, by(ageCat sex cursmoke)
+
+ageCat sex cursm |  Risk ratio    [95% conf. interval]   M–H weight
+-----------------+-------------------------------------------------
+           0 1 0 |    1.380952     .2595357   7.347851     .9767442 
+           0 1 1 |    1.414141     .4821771    4.14743     2.152174 
+           0 2 0 |           0            .          .     .7659574 
+           0 2 1 |    2.163636     .3432025   13.64012     .4435484 
+           1 1 0 |    .7933333     .4095297   1.536831      8.61244 
+           1 1 1 |    1.260729     .8672238   1.832788     16.80272 
+           1 2 0 |    1.079048     .5654267    2.05923     7.894737 
+           1 2 1 |    1.859666     1.210411   2.857176     9.494065 
+           2 1 0 |     .915493     .6530361   1.283432     25.41477 
+           2 1 1 |    1.429065     1.135095   1.799167     28.83817 
+           2 2 0 |    1.478074     1.109017   1.969946     28.44698 
+           2 2 1 |    1.378657     .9472106   2.006625     15.06645 
+           3 1 0 |    1.142342     .9661909   1.350609     44.02644 
+           3 1 1 |    1.143071     .9333008   1.399991     22.35366 
+           3 2 0 |    1.467249     1.267708   1.698197     80.18974 
+           3 2 1 |     1.39869     1.084333    1.80418     20.73868 
+-----------------+-------------------------------------------------
+           Crude |    1.327388      1.22496    1.43838              
+    M–H combined |    1.311106     1.214462   1.415441
+-------------------------------------------------------------------
+Test of homogeneity (M–H)      chi2(15) =   17.960  Pr>chi2 = 0.2648
+
+. 
+. //THE END//
+. 
+. 
+. 
+end of do-file
+

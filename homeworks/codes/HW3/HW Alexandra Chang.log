@@ -1,0 +1,485 @@
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+      name:  <unnamed>
+       log:  /Users/al8xi8/Desktop/HW Alexandra Chang.log
+  log type:  text
+ opened on:  30 Jan 2024, 10:27:13
+
+. do "/Users/al8xi8/Desktop/HW3 Alexandra Chang.do"
+
+. * PBHS31001 Epidemiologic Methods HW3
+. * Date: 1/30/2024 
+. * By: Alexandra Chang 
+. *==============================================================================*
+. 
+. *******************************Data Exploration*********************************
+. 
+. *Analyze the effects of maternal age, race and education on risk of preterm birth: gestational age <37 weeks.
+. 
+. *Effect Variables using:
+. //maternal age (dmage)
+. //maternal education (dmeduc)
+. //maternal race (mrace)
+. 
+. *Outcome Variable using:
+. //gestational age (dgestat)
+. 
+. *Examine distribution of each variable along with missing variables.
+. summarize dmage
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+       dmage |     40,274    27.34208    6.175027         12         51
+
+. tab dmage, missing
+
+      dmage |      Freq.     Percent        Cum.
+------------+-----------------------------------
+         12 |          1        0.00        0.00
+         13 |          7        0.02        0.02
+         14 |         52        0.13        0.15
+         15 |        189        0.47        0.62
+         16 |        466        1.16        1.78
+         17 |        790        1.96        3.74
+         18 |      1,199        2.98        6.71
+         19 |      1,656        4.11       10.83
+         20 |      1,894        4.70       15.53
+         21 |      1,988        4.94       20.46
+         22 |      2,081        5.17       25.63
+         23 |      2,103        5.22       30.85
+         24 |      2,033        5.05       35.90
+         25 |      2,102        5.22       41.12
+         26 |      2,082        5.17       46.29
+         27 |      2,201        5.47       51.76
+         28 |      2,123        5.27       57.03
+         29 |      2,211        5.49       62.52
+         30 |      2,206        5.48       67.99
+         31 |      2,183        5.42       73.41
+         32 |      1,971        4.89       78.31
+         33 |      1,765        4.38       82.69
+         34 |      1,460        3.63       86.32
+         35 |      1,288        3.20       89.51
+         36 |      1,090        2.71       92.22
+         37 |        878        2.18       94.40
+         38 |        698        1.73       96.13
+         39 |        549        1.36       97.50
+         40 |        374        0.93       98.43
+         41 |        244        0.61       99.03
+         42 |        175        0.43       99.47
+         43 |        100        0.25       99.71
+         44 |         63        0.16       99.87
+         45 |         27        0.07       99.94
+         46 |         10        0.02       99.96
+         47 |          8        0.02       99.98
+         48 |          1        0.00       99.99
+         49 |          3        0.01       99.99
+         50 |          2        0.00      100.00
+         51 |          1        0.00      100.00
+------------+-----------------------------------
+      Total |     40,274      100.00
+
+. 
+. summarize dmeduc
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+      dmeduc |     40,274    14.12261     10.6441          0         99
+
+. tab dmeduc, missing
+
+     dmeduc |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |         77        0.19        0.19
+          1 |         21        0.05        0.24
+          2 |         75        0.19        0.43
+          3 |        122        0.30        0.73
+          4 |        105        0.26        0.99
+          5 |        127        0.32        1.31
+          6 |        946        2.35        3.66
+          7 |        202        0.50        4.16
+          8 |        740        1.84        6.00
+          9 |      1,790        4.44       10.44
+         10 |      1,875        4.66       15.10
+         11 |      2,446        6.07       21.17
+         12 |     12,243       30.40       51.57
+         13 |      2,814        6.99       58.56
+         14 |      4,381       10.88       69.43
+         15 |      1,497        3.72       73.15
+         16 |      6,262       15.55       88.70
+         17 |      3,971        9.86       98.56
+         99 |        580        1.44      100.00
+------------+-----------------------------------
+      Total |     40,274      100.00
+
+. // dmeduc = 99, not stated: count as missing when re-organizing into categorial.
+. 
+. summarize mrace
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+       mrace |     40,274    2.949695    10.27164          1         78
+
+. tab mrace, missing
+
+      mrace |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |     31,676       78.65       78.65
+          2 |      6,051       15.02       93.68
+          3 |        428        1.06       94.74
+          4 |        334        0.83       95.57
+          5 |         94        0.23       95.80
+          6 |         73        0.18       95.98
+          7 |        334        0.83       96.81
+         18 |        313        0.78       97.59
+         28 |         89        0.22       97.81
+         38 |         16        0.04       97.85
+         48 |        149        0.37       98.22
+         58 |          8        0.02       98.24
+         68 |        250        0.62       98.86
+         78 |        459        1.14      100.00
+------------+-----------------------------------
+      Total |     40,274      100.00
+
+. 
+. summarize dgestat
+
+    Variable |        Obs        Mean    Std. dev.       Min        Max
+-------------+---------------------------------------------------------
+     dgestat |     40,274    39.29873     6.59236         17         99
+
+. tab dgestat, missing
+
+    dgestat |      Freq.     Percent        Cum.
+------------+-----------------------------------
+         17 |          5        0.01        0.01
+         18 |          2        0.00        0.02
+         19 |         10        0.02        0.04
+         20 |         15        0.04        0.08
+         21 |         12        0.03        0.11
+         22 |         20        0.05        0.16
+         23 |         18        0.04        0.20
+         24 |         40        0.10        0.30
+         25 |         60        0.15        0.45
+         26 |         48        0.12        0.57
+         27 |         56        0.14        0.71
+         28 |         65        0.16        0.87
+         29 |        107        0.27        1.14
+         30 |        137        0.34        1.48
+         31 |        196        0.49        1.96
+         32 |        208        0.52        2.48
+         33 |        362        0.90        3.38
+         34 |        609        1.51        4.89
+         35 |      1,035        2.57        7.46
+         36 |      1,722        4.28       11.74
+         37 |      3,540        8.79       20.53
+         38 |      7,226       17.94       38.47
+         39 |      9,758       24.23       62.70
+         40 |      8,023       19.92       82.62
+         41 |      3,966        9.85       92.47
+         42 |      1,260        3.13       95.60
+         43 |        712        1.77       97.36
+         44 |        341        0.85       98.21
+         45 |        169        0.42       98.63
+         46 |         75        0.19       98.82
+         47 |         64        0.16       98.97
+         99 |        413        1.03      100.00
+------------+-----------------------------------
+      Total |     40,274      100.00
+
+. 
+. //no missing observations, 40,274 observations total for each variable.
+. 
+. **************Categorical Variables from Continuous Variables*******************
+. 
+. *
+. *Modify "maternal age" from a cont. variable into cat. variable.
+. 
+. recode dmage (min/15=0 "< 15 yrs old") (15/25=1 "15-25 yrs old") (25/35=2 "25-35 yrs old") (35/45=3 "35-45 yrs old") (45/max=4 "45-55 yrs old") , gen(dmageCat)
+(40,274 differences between dmage and dmageCat)
+
+. 
+. rename dmageCat Maternal_Age
+
+. 
+. //Tabulate to check. (There are no missing values.)
+. tab Maternal_Age
+
+    RECODE of |
+        dmage |      Freq.     Percent        Cum.
+--------------+-----------------------------------
+ < 15 yrs old |        249        0.62        0.62
+15-25 yrs old |     16,312       40.50       41.12
+25-35 yrs old |     19,490       48.39       89.51
+35-45 yrs old |      4,198       10.42       99.94
+45-55 yrs old |         25        0.06      100.00
+--------------+-----------------------------------
+        Total |     40,274      100.00
+
+. 
+. *
+. *Repeat same steps for maternal education.
+. 
+. //First, specify dmeduc = 99 as missing.
+. gen miss_dmeduc = dmeduc >=99
+
+. tab miss_dmeduc
+
+miss_dmeduc |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |     39,694       98.56       98.56
+          1 |        580        1.44      100.00
+------------+-----------------------------------
+      Total |     40,274      100.00
+
+. //Table shows that there are 39,694 data and 580 missing data.
+. 
+. //Showing there are 580 missing education data.
+. //When we categorize, need to specifiy these as missing.
+. gen dmeducCat =.
+(40,274 missing values generated)
+
+. replace dmeducCat=1 if dmeduc<=00
+(77 real changes made)
+
+. replace dmeducCat=2 if dmeduc>=1 & dmeduc<=8 
+(2,338 real changes made)
+
+. replace dmeducCat=3 if dmeduc>=9 & dmeduc<=12 
+(18,354 real changes made)
+
+. replace dmeducCat=4 if dmeduc>=13 & dmeduc<=17 
+(18,925 real changes made)
+
+. replace dmeducCat=5 if dmeduc>=99 & dmeduc!=.
+(580 real changes made)
+
+. 
+. *Create a clear table legend and footnotes to describe nature of variables.
+. 
+. rename dmeducCat Maternal_Education
+
+. label var Maternal_Education "1=No education, 2=Elementary, 3=Highschool, 4=College, 5=Not stated"
+
+. 
+. //Tabulate to check.
+. tab Maternal_Education
+
+       1=No |
+ education, |
+2=Elementar |
+         y, |
+3=Highschoo |
+         l, |
+ 4=College, |
+      5=Not |
+     stated |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          1 |         77        0.19        0.19
+          2 |      2,338        5.81        6.00
+          3 |     18,354       45.57       51.57
+          4 |     18,925       46.99       98.56
+          5 |        580        1.44      100.00
+------------+-----------------------------------
+      Total |     40,274      100.00
+
+. 
+. *
+. *Repeat same steps for maternal race.
+. 
+. //Race needs 14 categories.
+. recode mrace (1=0 "White") (2=1 "Black")  (3=2 "American Indian") (4=3 "Chinese") (5=4 "Japanese") (6=5 "Hawaiian") (7=6 "Filipino") (18=7 "Asian Indian") (28=8 "Korean") (38=
+> 9 "Samoan") (48=10 "Vietnamese") (58=11 "Guamanian") (68=12 "Other Asian/Pacific Islander") (78=13 "Combined Asian/Pacific Islander"), gen(mraceCat)
+(40,274 differences between mrace and mraceCat)
+
+. 
+. rename mraceCat Maternal_Race
+
+. 
+. //Tabulate to check.
+. tab Maternal_Race
+
+                RECODE of mrace |      Freq.     Percent        Cum.
+--------------------------------+-----------------------------------
+                          White |     31,676       78.65       78.65
+                          Black |      6,051       15.02       93.68
+                American Indian |        428        1.06       94.74
+                        Chinese |        334        0.83       95.57
+                       Japanese |         94        0.23       95.80
+                       Hawaiian |         73        0.18       95.98
+                       Filipino |        334        0.83       96.81
+                   Asian Indian |        313        0.78       97.59
+                         Korean |         89        0.22       97.81
+                         Samoan |         16        0.04       97.85
+                     Vietnamese |        149        0.37       98.22
+                      Guamanian |          8        0.02       98.24
+   Other Asian/Pacific Islander |        250        0.62       98.86
+Combined Asian/Pacific Islander |        459        1.14      100.00
+--------------------------------+-----------------------------------
+                          Total |     40,274      100.00
+
+. 
+. *
+. *Repeat same steps for effect variable: gestational age, but specifiy missing values.
+. 
+. //First, specify dmeduc = 99 as missing.
+. gen miss_dgestat = dgestat >=99
+
+. 
+. rename miss_dgestat Gestational_Age
+
+. label var Gestational_Age "0=Complete gestation, 1=Missing gestation"
+
+. 
+. 
+. tab Gestational_Age
+
+ 0=Complete |
+ gestation, |
+  1=Missing |
+  gestation |      Freq.     Percent        Cum.
+------------+-----------------------------------
+          0 |     39,861       98.97       98.97
+          1 |        413        1.03      100.00
+------------+-----------------------------------
+      Total |     40,274      100.00
+
+. //Table shows that there are 39,861 data and 413 missing data.
+. 
+. //Showing there are 413 missing education data.
+. //When we categorize, need to specifiy these as missing.
+. 
+. ******************************Hypothesis Testing********************************
+. 
+. *Chi-square tests: compares frequency distributions of categorical variables.
+. 
+. tab Maternal_Age Gestational_Age, chi
+
+              | 0=Complete gestation,
+    RECODE of |  1=Missing gestation
+        dmage |         0          1 |     Total
+--------------+----------------------+----------
+ < 15 yrs old |       241          8 |       249 
+15-25 yrs old |    16,117        195 |    16,312 
+25-35 yrs old |    19,325        165 |    19,490 
+35-45 yrs old |     4,153         45 |     4,198 
+45-55 yrs old |        25          0 |        25 
+--------------+----------------------+----------
+        Total |    39,861        413 |    40,274 
+
+          Pearson chi2(4) =  22.8741   Pr = 0.000
+
+. tab Maternal_Education Gestational_Age, chi
+
+      1=No |
+education, |
+2=Elementa |
+       ry, |
+3=Highscho |
+       ol, |
+4=College, | 0=Complete gestation,
+     5=Not |  1=Missing gestation
+    stated |         0          1 |     Total
+-----------+----------------------+----------
+         1 |        77          0 |        77 
+         2 |     2,295         43 |     2,338 
+         3 |    18,159        195 |    18,354 
+         4 |    18,796        129 |    18,925 
+         5 |       534         46 |       580 
+-----------+----------------------+----------
+     Total |    39,861        413 |    40,274 
+
+          Pearson chi2(4) = 310.8476   Pr = 0.000
+
+. tab Maternal_Race Gestational_Age, chi
+
+                      | 0=Complete gestation,
+                      |  1=Missing gestation
+      RECODE of mrace |         0          1 |     Total
+----------------------+----------------------+----------
+                White |    31,328        348 |    31,676 
+                Black |     6,020         31 |     6,051 
+      American Indian |       424          4 |       428 
+              Chinese |       329          5 |       334 
+             Japanese |        94          0 |        94 
+             Hawaiian |        73          0 |        73 
+             Filipino |       324         10 |       334 
+         Asian Indian |       312          1 |       313 
+               Korean |        88          1 |        89 
+               Samoan |        16          0 |        16 
+           Vietnamese |       144          5 |       149 
+            Guamanian |         8          0 |         8 
+Other Asian/Pacific I |       246          4 |       250 
+Combined Asian/Pacifi |       455          4 |       459 
+----------------------+----------------------+----------
+                Total |    39,861        413 |    40,274 
+
+         Pearson chi2(13) =  43.3044   Pr = 0.000
+
+. 
+. //Stata a P-value of 0.000 is actually <0.0005.
+. //So we report P<0.001 with statistical significance across all 3 variables to gestational age.
+. 
+. *******************************Table Contruction********************************
+. 
+. *Install "table1" package from the Statistical Software Components (SSC):
+. ssc install table1
+checking table1 consistency and verifying not already installed...
+all files already exist and are up to date.
+
+. 
+. *Create Table 1 that compares those with and without missing gestational age in terms of the other 3 variables.
+. 
+. *Create a clear table legend and footnotes to describe nature of variables.
+. label var Maternal_Race Maternal_Race
+
+. label var Maternal_Age Maternal_Age
+
+. label var Maternal_Education Maternal_Education
+
+. label var Maternal_Education "Maternal_Age: 1=No education, 2=Elementary, 3=Highschool, 4=College, 5=Not stated"
+note: label truncated to 80 characters
+
+. 
+. //Stratify by Gestational_Age as primary exposure.
+. table1, by(Gestational_Age) vars(Maternal_Age cat\ Maternal_Education cat\ Maternal_Race cat) format(%2.1f) missing
+  +--------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+  | Factor                                                                             Level                             Gestational_Age = 0   Gestational_Age = 1   p-value |
+  |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+  | N                                                                                                                    39861                 413                           |
+  |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+  | Maternal_Age                                                                       < 15 yrs old                      241 (0.6%)            8 (1.9%)               <0.001 |
+  |                                                                                    15-25 yrs old                     16117 (40.4%)         195 (47.2%)                   |
+  |                                                                                    25-35 yrs old                     19325 (48.5%)         165 (40.0%)                   |
+  |                                                                                    35-45 yrs old                     4153 (10.4%)          45 (10.9%)                    |
+  |                                                                                    45-55 yrs old                     25 (0.1%)             0 (0.0%)                      |
+  |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+  | Maternal_Age: 1=No education, 2=Elementary, 3=Highschool, 4=College, 5=Not state   1                                 77 (0.2%)             0 (0.0%)               <0.001 |
+  |                                                                                    2                                 2295 (5.8%)           43 (10.4%)                    |
+  |                                                                                    3                                 18159 (45.6%)         195 (47.2%)                   |
+  |                                                                                    4                                 18796 (47.2%)         129 (31.2%)                   |
+  |                                                                                    5                                 534 (1.3%)            46 (11.1%)                    |
+  |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+  | Maternal_Race                                                                      White                             31328 (78.6%)         348 (84.3%)            <0.001 |
+  |                                                                                    Black                             6020 (15.1%)          31 (7.5%)                     |
+  |                                                                                    American Indian                   424 (1.1%)            4 (1.0%)                      |
+  |                                                                                    Chinese                           329 (0.8%)            5 (1.2%)                      |
+  |                                                                                    Japanese                          94 (0.2%)             0 (0.0%)                      |
+  |                                                                                    Hawaiian                          73 (0.2%)             0 (0.0%)                      |
+  |                                                                                    Filipino                          324 (0.8%)            10 (2.4%)                     |
+  |                                                                                    Asian Indian                      312 (0.8%)            1 (0.2%)                      |
+  |                                                                                    Korean                            88 (0.2%)             1 (0.2%)                      |
+  |                                                                                    Samoan                            16 (<1%)              0 (0.0%)                      |
+  |                                                                                    Vietnamese                        144 (0.4%)            5 (1.2%)                      |
+  |                                                                                    Guamanian                         8 (<1%)               0 (0.0%)                      |
+  |                                                                                    Other Asian/Pacific Islander      246 (0.6%)            4 (1.0%)                      |
+  |                                                                                    Combined Asian/Pacific Islander   455 (1.1%)            4 (1.0%)                      |
+  +--------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+
+. 
+. //THE END// 
+. 
+. 
+. 
+. 
+. 
+end of do-file
+
